@@ -1,0 +1,33 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('student_data.csv')
+print(df)
+print("\nFirst five records: \n",df.head(5))
+print("\nLast five records: \n",df.tail(5))
+print("\nTotal number of rows and columns: ",df.shape)
+print("\nNames of all columns: \n",df.columns)
+print("\nData type of each column: \n",df.dtypes)
+print("\nDataset Information: \n")
+df.info()
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('student_data.csv')
+print("\nMean Attendance: ",df["Attendance"].mean())
+avg = df["InternalMarks"].mean()
+print("\nAverage Internal Marks: ",avg)
+avg2 = df["ExternalMarks"].mean()
+print("\nAverage External Marks: ",avg2)
+max = df["InternalMarks"].max()
+min = df["InternalMarks"].min()
+max1 = df["ExternalMarks"].max()
+min1 = df["ExternalMarks"].min()
+print("\nMaximum Internal Marks: ",max)
+print("\nMinimum Internal Marks: ",min)
+print("\nMaximum External Marks: ",max1)
+print("\nMinimum External Marks: ",min1)
+stde = df["InternalMarks"].std()
+print("\nStandard Deviation of Internal Marks: ",stde)
