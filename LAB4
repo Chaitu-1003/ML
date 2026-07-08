@@ -1,0 +1,98 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from collections import Counter
+df = pd.read_csv('Info.csv')
+print(df)
+df = df.fillna("Null")
+if "RID" in df.columns:
+    df = df.drop(columns=["RID"])
+class Node:
+    def __init__(self, feature=None, value=None, label=None):
+        self.feature = feature
+        self.value = value
+        self.label = label
+        self.children = {}
+
+# 1. Calculate the entropy of a target column
+def calculate_entropy(data, target_col):
+    total_samples = len(data)
+    if total_samples == 0:
+        return 0
+    
+    # Get frequencies of each unique class in the target column
+    class_counts = data[target_col].value_counts()
+    
+    entropy = 0
+    for count in class_counts:
+        probability = count / total_samples
+        entropy -= probability * math.log2(probability)
+        
+    return entropy
+
+# 2. Calculate the information gain of an attribute
+def calculate_information_gain(data, split_attribute, target_col):
+    # Total entropy before split
+    total_entropy = calculate_entropy(data, target_col)
+    
+    # Values and sample counts for the chosen split attribute
+    attribute_counts = data[split_attribute].value_counts()
+    total_samples = len(data)
+    
+    # Calculate weighted entropy after split
+    weighted_entropy = 0
+    for value, count in attribute_counts.items():
+        # Subset where the attribute has the specific value
+        subset = data[data[split_attribute] == value]
+        subset_entropy = calculate_entropy(subset, target_col)
+        
+        # Weighted entropy contribution
+        weight = count / total_samples
+        weighted_entropy += weight * subset_entropy
+        
+    # Information gain calculation
+    info_gain = total_entropy - weighted_entropy
+    return info_gain
+
+# 3. Recursive ID3 Algorithm to build the tree
+def id3_algorithm(data, original_data, features, target_col, parent_node_class=None):
+    # Base Case 1: If data is empty, return the majority class of original data
+    if len(data) == 0:
+        return original_data[target_col].mode()[0]
+    
+    # Base Case 2: If the dataset is pure (only one class remains)
+    if len(data[target_col].unique()) <= 1:
+        return data[target_col].iloc[0]
+    
+    # Base Case 3: If no features are left to split on, return majority class
+    if len(features) == 0:
+        return data[target_col].mode()[0]
+    
+    # Find the feature that yields the maximum information gain
+    gains = {feat: calculate_information_gain(data, feat, target_col) for feat in features}
+    best_feature = max(gains, key=gains.get)
+    
+    # Initialize the tree node structure
+    tree = {best_feature: {}}
+    
+    # Remove the chosen feature from the list for downstream branches
+    remaining_features = [f for f in features if f != best_feature]
+    
+    # Grow the tree by branching on each unique value of the best feature
+    unique_values = original_data[best_feature].unique()
+    for value in unique_values:
+        # Create a partition/subset based on the attribute value
+        subset = data[data[best_feature] == value]
+        
+        # Recursively build subtrees
+        subtree = id3_algorithm(
+            data=subset,
+            original_data=original_data,
+            features=remaining_features,
+            target_col=target_col,
+            parent_node_class=data[target_col].mode()[0]
+        )
+        tree[best_feature][value] = subtree
+        
+    return tree    
+
+    
