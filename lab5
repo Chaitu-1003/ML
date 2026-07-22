@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+s = ["walking","running","resting"]
+#observation symbols
+v = ["low","medium","high"]
+#initial values
+initial = [0.5,0.3,0.2]
+# state tranisition matrix 
+a = np.array([[0.6,0.3,0.1],
+     [0.2,0.5,0.3],
+     [0.3,0.2,0.5]])
+# emission matrix
+b = np.array([[0.6,0.3,0.1],
+     [0.1,0.3,0.6],
+     [0.7,0.2,0.1]])
+#observation sequence
+ob = ["high","medium","low","high"]
+print(a,b)
+
+v_map = {symbol: idx for idx, symbol in enumerate(v)
+
+
+#from hmmlearn.hmm import CategoricalHMM
+import numpy as np
+
+
+states = ["Walking", "Running", "zresting"]
+observations = ["Low", "Medium", "High"]
+
+model = CategoricalHMM(n_components=3, random_state = 46)
+
+model.initprob = np.array([0.5, 0.3, 0.2])
+
+model.transitprob = np.array([0.6, 0.3, 0.1], [0.2, 0.5, 0.3], [0.3, 0.2, 0.5])
+
+model.emissionprob = np.array([0.6, 0.3, 0.1], [0.1, 0.3, 0.6], [0.7, 0.2, 0.1])
+
+observation_sequence = ["High", "Medium", "Low", "High"]
+
+score = model.score(observation_sequence)
+print("Likelihood of the given observation is: ",score)
